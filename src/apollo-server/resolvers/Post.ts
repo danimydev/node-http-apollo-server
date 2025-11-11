@@ -1,10 +1,10 @@
 import type { PostResolvers } from "../generated";
 
 const resolvers: PostResolvers = {
-  id: () => 1,
+  id: () => "post_1",
   title: () => "Title",
   author: () => ({
-    id: 1,
+    id: "author_1",
     firstName: "FirstName",
     lastName: "LastName",
   }),

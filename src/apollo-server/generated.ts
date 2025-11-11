@@ -19,26 +19,21 @@ export type Scalars = {
 export type Author = {
   __typename?: 'Author';
   firstName: Scalars['String']['output'];
-  id: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
   lastName: Scalars['String']['output'];
   posts?: Maybe<Array<Maybe<Post>>>;
-};
-
-
-export type AuthorPostsArgs = {
-  findTitle?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Post = {
   __typename?: 'Post';
   author?: Maybe<Author>;
-  id: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
   title: Scalars['String']['output'];
 };
 
 export type Query = {
   __typename?: 'Query';
-  posts: Array<Maybe<Post>>;
+  posts?: Maybe<Array<Maybe<Post>>>;
 };
 
 
@@ -116,7 +111,7 @@ export type DirectiveResolverFn<TResult = Record<PropertyKey, never>, TParent = 
 export type ResolversTypes = {
   Author: ResolverTypeWrapper<Author>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Post: ResolverTypeWrapper<Post>;
   Query: ResolverTypeWrapper<Record<PropertyKey, never>>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
@@ -126,7 +121,7 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Author: Author;
   Boolean: Scalars['Boolean']['output'];
-  Int: Scalars['Int']['output'];
+  ID: Scalars['ID']['output'];
   Post: Post;
   Query: Record<PropertyKey, never>;
   String: Scalars['String']['output'];
@@ -134,19 +129,19 @@ export type ResolversParentTypes = {
 
 export type AuthorResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Author'] = ResolversParentTypes['Author']> = {
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType, Partial<AuthorPostsArgs>>;
+  posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType>;
 };
 
 export type PostResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
   author?: Resolver<Maybe<ResolversTypes['Author']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  posts?: Resolver<Array<Maybe<ResolversTypes['Post']>>, ParentType, ContextType>;
+  posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = Context> = {
