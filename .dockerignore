@@ -1,0 +1,27 @@
+node_modules
+dist
+
+*.log
+
+# Confidential
+.env
+
+# Git
+.git
+.gitignore
+
+# Misc
+.env.example
+README.md
+LICENSE
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Editor
+.zed
+
+# OS
+.DS_Store

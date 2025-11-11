@@ -25,11 +25,14 @@
     "lint": "tsc",
     "build": "esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.js",
     "build:graphql": "graphql-codegen --config graphql-codegen-config.ts",
+    "build:docker": "docker-compose build",
     "start": "node --env-file=.env dist/index.js",
     "dev:lint": "tsc --watch",
     "dev:build": "esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.js --watch",
     "dev:start": "node --env-file=.env --watch dist/index.js",
-    "dev": "npm-run-all --parallel dev:lint dev:build dev:start"
+    "dev:start:docker": "docker-compose up",
+    "dev": "npm-run-all --parallel dev:lint dev:build dev:start",
+    "dev:docker": "npm run build:docker && npm-run-all --parallel dev:lint dev:build dev:start:docker"
   },
   "dependencies": {
     "@apollo/server": "5.1.0",
