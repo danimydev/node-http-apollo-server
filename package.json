@@ -1,0 +1,50 @@
+{
+  "name": "node-http-apollo-server",
+  "version": "1.0.0",
+  "description": "Starting point for a graphql server with node:http and @apollo/server.",
+  "author": "Daniel Madrid",
+  "homepage": "https://github.com/danimydev/node-http-apollo-server#readme",
+  "bugs": {
+    "url": "https://github.com/danimydev/node-http-apollo-server/issues"
+  },
+  "keywords": [
+    "http",
+    "graphql",
+    "apollo",
+    "api",
+    "@apollo/server"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danimydev/node-http-apollo-server.git"
+  },
+  "license": "ISC",
+  "main": "index.js",
+  "sideEffects": false,
+  "scripts": {
+    "lint": "tsc",
+    "build": "esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.js",
+    "build:graphql": "graphql-codegen --config graphql-codegen-config.ts",
+    "start": "node --env-file=.env dist/index.js",
+    "dev:lint": "tsc --watch",
+    "dev:build": "esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.js --watch",
+    "dev:start": "node --env-file=.env --watch dist/index.js",
+    "dev": "npm-run-all --parallel dev:lint dev:build dev:start"
+  },
+  "dependencies": {
+    "@apollo/server": "5.1.0",
+    "graphql": "16.12.0",
+    "pino": "10.1.0",
+    "valibot": "1.1.0"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "6.0.1",
+    "@graphql-codegen/introspection": "5.0.0",
+    "@graphql-codegen/typescript": "5.0.2",
+    "@graphql-codegen/typescript-resolvers": "5.1.0",
+    "@types/node": "24.10.0",
+    "esbuild": "0.25.12",
+    "npm-run-all": "4.1.5",
+    "typescript": "5.9.3"
+  }
+}
