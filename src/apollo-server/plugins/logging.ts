@@ -11,7 +11,7 @@ const logging: ApolloServerPlugin<Context> = {
         if (context.operationName === "IntrospectionQuery") {
           return;
         }
-        logger.info("🚀 Request started:", context.request.query);
+        logger.info("🚀 Request started:", context.request);
       },
       async didEncounterErrors(context) {
         logger.error("❌ Errors:", context.errors);

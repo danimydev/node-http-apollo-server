@@ -12,45 +12,45 @@ import Utils from "../utils";
 
 type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
-type HttpContextFunctionArgument = {
+type NodeHttpContextFunctionArgument = {
   incommingMessage: http.IncomingMessage;
   serverResponse: http.ServerResponse;
 };
 
-type HttpMiddlewareOptions<TContext extends BaseContext> = {
-  context?: ContextFunction<[HttpContextFunctionArgument], TContext>;
+type NodeHttpMiddlewareOptions<TContext extends BaseContext> = {
+  context?: ContextFunction<[NodeHttpContextFunctionArgument], TContext>;
 };
 
-export type HttpRequestHandler = (
+export type NodeHttpServerOnRequestHandler = (
   incommingMessage: http.IncomingMessage,
   serverResponse: http.ServerResponse,
-) => Promise<void>;
+) => Promise<boolean>;
 
-export function httpMiddleware(
+export default function nodeHttpMiddleware(
   server: ApolloServer<BaseContext>,
-  options?: HttpMiddlewareOptions<BaseContext>,
-): HttpRequestHandler;
-export function httpMiddleware<TContext extends BaseContext>(
+  options?: NodeHttpMiddlewareOptions<BaseContext>,
+): NodeHttpServerOnRequestHandler;
+export default function nodeHttpMiddleware<TContext extends BaseContext>(
   server: ApolloServer<TContext>,
-  options: WithRequired<HttpMiddlewareOptions<TContext>, "context">,
-): HttpRequestHandler;
-export function httpMiddleware<TContext extends BaseContext>(
+  options: WithRequired<NodeHttpMiddlewareOptions<TContext>, "context">,
+): NodeHttpServerOnRequestHandler;
+export default function nodeHttpMiddleware<TContext extends BaseContext>(
   server: ApolloServer<TContext>,
-  options?: HttpMiddlewareOptions<TContext>,
-): HttpRequestHandler {
+  options?: NodeHttpMiddlewareOptions<TContext>,
+): NodeHttpServerOnRequestHandler {
   server.assertStarted("httpMiddleware()");
 
   const defaultContext: ContextFunction<
-    [HttpContextFunctionArgument],
+    [NodeHttpContextFunctionArgument],
     any
   > = async () => ({});
 
-  const context: ContextFunction<[HttpContextFunctionArgument], TContext> =
+  const context: ContextFunction<[NodeHttpContextFunctionArgument], TContext> =
     options?.context ?? defaultContext;
 
   return async (incommingMessage, serverResponse) => {
     if (!incommingMessage.url || !incommingMessage.method) {
-      return;
+      return false;
     }
 
     const headerMap = new HeaderMap();
@@ -80,7 +80,7 @@ export function httpMiddleware<TContext extends BaseContext>(
 
     if (httpGraphQLResponse.body.kind === "complete") {
       serverResponse.end(httpGraphQLResponse.body.string);
-      return;
+      return true;
     }
 
     if (httpGraphQLResponse.body.kind === "chunked") {
@@ -90,5 +90,6 @@ export function httpMiddleware<TContext extends BaseContext>(
     }
 
     serverResponse.end();
+    return true;
   };
 }

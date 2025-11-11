@@ -4,29 +4,43 @@ import crypto from "node:crypto";
 
 import apolloServer from "./apollo-server/server";
 import ApolloServerPlugins from "./apollo-server/plugins";
-import { httpMiddleware } from "./apollo-server/http-middleware";
+import nodeHttpMiddleware from "./apollo-server/node-http-middleware";
 import env from "./env";
 import logger from "./logger";
+import nodeHttpCors from "./node-http-cors";
 
 async function main() {
   const httpServer = http.createServer();
 
   apolloServer.addPlugin(ApolloServerPlugins.landingPage);
   apolloServer.addPlugin(ApolloServerPlugins.logging);
+  apolloServer.addPlugin(ApolloServerPlugins.drainHttpServer(httpServer));
 
   await apolloServer.start();
 
-  httpServer.on("request", (incommingMessage, serverResponse) => {
+  const corsHandler = nodeHttpCors({ origins: ["*"] });
+
+  const graphqlHandler = nodeHttpMiddleware(apolloServer, {
+    context: async () => ({
+      requestLogger: logger.child({
+        module: "context",
+        requestId: crypto.randomUUID(),
+      }),
+    }),
+  });
+
+  httpServer.on("request", async (incommingMessage, serverResponse) => {
+    if (corsHandler(incommingMessage, serverResponse)) {
+      return;
+    }
+
     if (incommingMessage.url === "/graphql") {
-      const handler = httpMiddleware(apolloServer, {
-        context: async () => ({
-          requestLogger: logger.child({
-            module: "context",
-            requestId: crypto.randomUUID(),
-          }),
-        }),
-      });
-      return handler(incommingMessage, serverResponse);
+      const serverResponseEnded = await graphqlHandler(
+        incommingMessage,
+        serverResponse,
+      );
+
+      if (serverResponseEnded) return;
     }
 
     if (incommingMessage.url === "/graphql/schema") {
