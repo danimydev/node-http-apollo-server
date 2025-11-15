@@ -1,17 +1,6 @@
-import { loadEnvFile } from "node:process";
-import * as v from "valibot";
+import env, { string, number } from "@danimydev/env";
 
-loadEnvFile(".env");
-
-const envSchema = v.object({
-  NODE_ENV: v.enum({
-    Production: "production",
-    Development: "development",
-    Test: "test",
-  } as const),
-  PORT: v.string(),
+export default env({
+  NODE_ENV: string(),
+  PORT: number(),
 });
-
-const env = v.parse(envSchema, process.env);
-
-export default env;

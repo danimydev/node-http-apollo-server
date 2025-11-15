@@ -8,44 +8,40 @@ import {
   type ContextFunction,
 } from "@apollo/server";
 
-import Utils from "../utils";
+import type { RequestHandler } from "../request-handler";
+import * as Utils from "../utils";
 
 type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
-type HttpContextFunctionArgument = {
+type ContextFunctionArgument = {
   incommingMessage: http.IncomingMessage;
   serverResponse: http.ServerResponse;
 };
 
-type HttpMiddlewareOptions<TContext extends BaseContext> = {
-  context?: ContextFunction<[HttpContextFunctionArgument], TContext>;
+type ApolloServerHandlerOptions<TContext extends BaseContext> = {
+  context?: ContextFunction<[ContextFunctionArgument], TContext>;
 };
 
-export type HttpRequestHandler = (
-  incommingMessage: http.IncomingMessage,
-  serverResponse: http.ServerResponse,
-) => Promise<void>;
-
-export function httpMiddleware(
+export default function createApolloServerHandler(
   server: ApolloServer<BaseContext>,
-  options?: HttpMiddlewareOptions<BaseContext>,
-): HttpRequestHandler;
-export function httpMiddleware<TContext extends BaseContext>(
+  options?: ApolloServerHandlerOptions<BaseContext>,
+): RequestHandler<Promise<void>>;
+export default function createApolloServerHandler<TContext extends BaseContext>(
   server: ApolloServer<TContext>,
-  options: WithRequired<HttpMiddlewareOptions<TContext>, "context">,
-): HttpRequestHandler;
-export function httpMiddleware<TContext extends BaseContext>(
+  options: WithRequired<ApolloServerHandlerOptions<TContext>, "context">,
+): RequestHandler<Promise<void>>;
+export default function createApolloServerHandler<TContext extends BaseContext>(
   server: ApolloServer<TContext>,
-  options?: HttpMiddlewareOptions<TContext>,
-): HttpRequestHandler {
+  options?: ApolloServerHandlerOptions<TContext>,
+): RequestHandler<Promise<void>> {
   server.assertStarted("httpMiddleware()");
 
   const defaultContext: ContextFunction<
-    [HttpContextFunctionArgument],
+    [ContextFunctionArgument],
     any
   > = async () => ({});
 
-  const context: ContextFunction<[HttpContextFunctionArgument], TContext> =
+  const context: ContextFunction<[ContextFunctionArgument], TContext> =
     options?.context ?? defaultContext;
 
   return async (incommingMessage, serverResponse) => {
@@ -61,7 +57,7 @@ export function httpMiddleware<TContext extends BaseContext>(
       }
     }
 
-    const body = await Utils.getHttpIncommingMessageBody(incommingMessage);
+    const body = await Utils.getIncommingMessageBody(incommingMessage);
 
     const httpGraphQLResponse = await server.executeHTTPGraphQLRequest({
       httpGraphQLRequest: {
@@ -90,5 +86,6 @@ export function httpMiddleware<TContext extends BaseContext>(
     }
 
     serverResponse.end();
+    return;
   };
 }

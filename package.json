@@ -22,23 +22,21 @@
   "main": "index.js",
   "sideEffects": false,
   "scripts": {
+    "test": "esbuild src/**/*.test.ts --bundle --minify --platform=node --outdir=tests && node --test tests/**/*.test.js",
     "lint": "tsc",
-    "build": "esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.js",
-    "build:graphql": "graphql-codegen --config graphql-codegen-config.ts",
-    "build:docker": "docker-compose build",
+    "lint:watch": "tsc --watch",
+    "build": "tsc && esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.js",
+    "build:watch": "tsc && esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.js --watch",
     "start": "node --env-file=.env dist/index.js",
-    "dev:lint": "tsc --watch",
-    "dev:build": "esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.js --watch",
-    "dev:start": "node --env-file=.env --watch dist/index.js",
-    "dev:start:docker": "docker-compose up",
-    "dev": "npm-run-all --parallel dev:lint dev:build dev:start",
-    "dev:docker": "npm run build:docker && npm-run-all --parallel dev:lint dev:build dev:start:docker"
+    "start:watch": "node --env-file=.env --watch dist/index.js",
+    "dev": "npm-run-all --parallel --print-label lint:watch build:watch start:watch",
+    "codegen": "graphql-codegen --config graphql-codegen-config.ts"
   },
   "dependencies": {
     "@apollo/server": "5.1.0",
+    "@danimydev/env": "npm:@jsr/danimydev__env@^0.1.1",
     "graphql": "16.12.0",
-    "pino": "10.1.0",
-    "valibot": "1.1.0"
+    "pino": "10.1.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "6.0.1",
