@@ -1,6 +1,6 @@
 import http from "node:http";
 
-export type OnRequestHandler = (
+export type RequestHandler<ReturnType = void> = (
   incommingMessage: http.IncomingMessage,
   serverResponse: http.ServerResponse,
-) => Promise<boolean> | boolean;
+) => ReturnType;

@@ -1,6 +1,6 @@
 import http from "node:http";
 
-export default async function getHttpIncommingMessageBody(
+export async function getIncommingMessageBody(
   incommingMessage: http.IncomingMessage,
 ) {
   const chunks: Uint8Array[] = [];
